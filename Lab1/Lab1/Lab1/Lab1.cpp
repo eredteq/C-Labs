@@ -1,0 +1,183 @@
+// Lab1.cpp : Defines the entry point for the application.
+//
+#include "framework.h"
+#include "Lab1.h"
+#include <string>
+
+#define MAX_LOADSTRING 100
+
+// Global Variables:
+HINSTANCE hInst;                                // current instance
+WCHAR szTitle[MAX_LOADSTRING];
+WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+
+// Forward declarations of functions included in this code module:
+ATOM                MyRegisterClass(HINSTANCE hInstance);
+BOOL                InitInstance(HINSTANCE, int);
+LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
+{
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+
+    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_LAB1, szWindowClass, MAX_LOADSTRING);
+
+    MyRegisterClass(hInstance);
+
+    if (!InitInstance(hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
+
+    MSG msg;
+
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LAB1));
+
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+    return (int)msg.wParam;
+}
+
+ATOM MyRegisterClass(HINSTANCE hInstance)
+{
+    WNDCLASSEXW wcex;
+
+    wcex.cbSize = sizeof(WNDCLASSEX);
+
+    wcex.style = CS_BYTEALIGNCLIENT | CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+
+    // Тип іконки згідно з варіантом 8 - іконки: IDI QUESTION,курсор: IDC_ARROW.
+    wcex.hIcon = LoadIcon(nullptr, IDI_QUESTION);
+    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+
+    // Колір фону вікна згідно з варіантом 8 - сірий
+    wcex.hbrBackground = (HBRUSH)(CreateSolidBrush(RGB(128, 128, 128)));
+
+    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_LAB1);
+    wcex.lpszClassName = szWindowClass;
+    wcex.hIconSm = LoadIcon(nullptr, IDI_QUESTION);
+
+    return RegisterClassExW(&wcex);
+}
+
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+    hInst = hInstance;
+
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+
+    // Розміри вікна згідно з варіантом 8 - 450 на 440 пікселів, розташування вікна по правому краю екрана.
+    int windowWidth = 450;
+    int windowHeight = 440;
+
+    // Розташування вікна по правому краю екрана
+    int posX = screenWidth - windowWidth;
+    int posY = 0;
+
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW | WS_HSCROLL | WS_VSCROLL,
+        posX, posY, windowWidth, windowHeight, nullptr, nullptr, hInstance, nullptr);
+
+    if (!hWnd)
+    {
+        return FALSE;
+    }
+
+    ShowWindow(hWnd, SW_SHOWMINIMIZED);
+    UpdateWindow(hWnd);
+
+    return TRUE;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+    case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        // Parse the menu selections:
+        switch (wmId)
+        {
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
+        case IDM_EXIT:
+            DestroyWindow(hWnd);
+            break;
+        default:
+            return DefWindowProcW(hWnd, message, wParam, lParam);
+        }
+    }
+    break;
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+
+        RECT rect;
+        GetClientRect(hWnd, &rect);
+
+        // Розмір прямокутника подвійного кліку
+        int dbClickWidth = GetSystemMetrics(SM_CXDOUBLECLK);
+        int dbClickHeight = GetSystemMetrics(SM_CYDOUBLECLK);
+
+        // Інформація про пристрій: відносна ширина точки
+        HDC hdcScreen = GetDC(NULL);
+        int aspectX = GetDeviceCaps(hdcScreen, ASPECTX);
+        ReleaseDC(NULL, hdcScreen);
+
+        std::wstring text = L"Прямокутник подвійного кліку: по X " + std::to_wstring(dbClickWidth) + L" по Y " + std::to_wstring(dbClickHeight) + L"\n" +
+            L"Відносна ширина точки: " + std::to_wstring(aspectX);
+
+        // Робимо фон тексту прозорим, щоб не було білого прямокутника
+        SetBkMode(hdc, TRANSPARENT);
+
+        DrawTextW(hdc, text.c_str(), -1, &rect, DT_CENTER | DT_VCENTER);
+
+        EndPaint(hWnd, &ps);
+    }
+    break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    default:
+        return DefWindowProcW(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+// Message handler for about box.
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+        {
+            EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
