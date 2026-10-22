@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Lab4Client1/Lab4Client1.vcxproj" Id="25f45f88-a9f5-4fdc-a7cd-b05830ae9594" />
+  <Project Path="Lab4Client2/Lab4Client2.vcxproj" Id="153be24d-3938-4c9d-9677-4fb39a9dc4c1" />
+  <Project Path="Lab4Client3/Lab4Client3.vcxproj" Id="78e47686-cd51-4c3d-b8cd-ca04ac8e43dd" />
+  <Project Path="Lab4_C++/Lab4_C++.vcxproj" Id="9e2ec1b8-d892-4565-ba1e-71bba7b3b227" />
+</Solution>
