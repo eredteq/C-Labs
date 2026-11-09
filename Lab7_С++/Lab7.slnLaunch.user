@@ -1,0 +1,23 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Lab7\\Lab7.vcxproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Lab7Client1\\Lab7Client1.vcxproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Lab7Client2\\Lab7Client2.vcxproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Lab7Client3\\Lab7Client3.vcxproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
